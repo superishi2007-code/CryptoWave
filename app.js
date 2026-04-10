@@ -1,10 +1,10 @@
 
-// ---- API Setup ----
+
 var API_KEY = "af5efca4ba3badf41b6d8d3aa5cf3cf4";
 var API_URL = "http://api.coinlayer.com/live?access_key=" + API_KEY + "&symbols=BTC,ETH,BNB,XRP,ADA,SOL,DOGE,DOT,LTC,AVAX,MATIC,SHIB,TRX,UNI,ATOM";
  
  
-// ---- Coin name and icon lookup ----
+
 var coinInfo = {
   BTC:   { name: "Bitcoin",   icon: "https://assets.coincap.io/assets/icons/btc@2x.png" },
   ETH:   { name: "Ethereum",  icon: "https://assets.coincap.io/assets/icons/eth@2x.png" },
@@ -24,10 +24,10 @@ var coinInfo = {
 };
  
  
-// ---- Global Variables ----
-var allCoins  = [];    // all fetched coins stored here as an array of objects
-var favorites = [];    // stores symbols of favorited coins e.g. ["BTC", "ETH"]
-var isDarkMode = true; // page starts in dark mode
+\
+var allCoins  = [];   \
+var favorites = [];  \
+var isDarkMode = true; 
  
  
 // ---- Get HTML elements ----
@@ -36,10 +36,7 @@ var coinsContainer = document.getElementById("coins-container");
 var errorMessage   = document.getElementById("error-message");
  
  
-// =============================================
-// FUNCTION: fetchCoins
-// Calls CoinLayer API and stores data
-// =============================================
+
 function fetchCoins() {
  
   // Show loading, hide everything else
@@ -61,14 +58,11 @@ function fetchCoins() {
         throw new Error("API error: " + data.error.info);
       }
  
-      // Convert the rates object { BTC: 45000, ETH: 3000 }
-      // into an ARRAY of objects so we can use HOFs on it
-      // [ { symbol: "BTC", price: 45000, name: "Bitcoin", icon: "..." }, ... ]
       var rates = data.rates;
  
       allCoins = Object.keys(rates)
         .filter(function(symbol) {
-          return coinInfo[symbol]; // only keep coins we have info for
+          return coinInfo[symbol]; 
         })
         .map(function(symbol) {
           return {
@@ -82,7 +76,7 @@ function fetchCoins() {
       loadingDiv.classList.add("hidden");
       coinsContainer.classList.remove("hidden");
  
-      applyAll(); // display coins after fetching
+      applyAll(); 
  
     })
     .catch(function(error) {
@@ -93,11 +87,7 @@ function fetchCoins() {
 }
  
  
-// =============================================
-// FUNCTION: applyAll
-// Runs Search + Filter + Sort together
-// Called every time user types or changes a dropdown
-// =============================================
+
 function applyAll() {
  
   // Read current values from the controls
@@ -105,20 +95,13 @@ function applyAll() {
   var filterValue = document.getElementById("filter-select").value;
   var sortValue   = document.getElementById("sort-select").value;
  
- 
-  // -------------------------------------------
-  // HOF 1: .filter() — SEARCH
-  // Keep coins where name OR symbol matches what user typed
-  // -------------------------------------------
+
   var result = allCoins.filter(function(coin) {
     return coin.name.toLowerCase().includes(searchText) ||
            coin.symbol.toLowerCase().includes(searchText);
   });
  
- 
-  // -------------------------------------------
-  // HOF 2: .filter() — FILTER BY PRICE RANGE
-  // -------------------------------------------
+
   if (filterValue === "high") {
     // Only coins priced above $100
     result = result.filter(function(coin) {
@@ -131,8 +114,7 @@ function applyAll() {
       return coin.price >= 1 && coin.price < 100;
     });
  
-  } else if (filterValue === "low") {
-    // Coins below $1 (small coins like SHIB, DOGE)
+  
     result = result.filter(function(coin) {
       return coin.price < 1;
     });
@@ -143,66 +125,49 @@ function applyAll() {
       return favorites.includes(coin.symbol);
     });
   }
-  // if filterValue === "all", no filter needed
- 
- 
-  // -------------------------------------------
-  // HOF 3: .sort() — SORT
-  // .sort() compares two coins (a and b)
-  // Negative = a comes first | Positive = b comes first
-  // -------------------------------------------
+
   if (sortValue === "price-high") {
     result = result.sort(function(a, b) {
-      return b.price - a.price; // highest price first
+      return b.price - a.price;
     });
  
   } else if (sortValue === "price-low") {
     result = result.sort(function(a, b) {
-      return a.price - b.price; // lowest price first
+      return a.price - b.price; 
     });
  
   } else if (sortValue === "name-az") {
     result = result.sort(function(a, b) {
-      return a.name.localeCompare(b.name); // A to Z
+      return a.name.localeCompare(b.name); 
     });
  
   } else if (sortValue === "name-za") {
     result = result.sort(function(a, b) {
-      return b.name.localeCompare(a.name); // Z to A
+      return b.name.localeCompare(a.name); 
     });
   }
-  // Default order = the order they came from the API
- 
- 
-  // Show the final result
+
   displayCoins(result);
 }
  
- 
-// =============================================
-// FUNCTION: displayCoins
-// Uses .map() to build HTML cards for each coin
-// =============================================
+
 function displayCoins(coins) {
  
-  // No results case
+
   if (coins.length === 0) {
     coinsContainer.innerHTML = "<p class='no-results'>No coins found. Try a different search!</p>";
     return;
   }
  
-  // -------------------------------------------
-  // HOF 4: .map() — Build one HTML string per coin
-  // .join("") glues all strings into one
-  // -------------------------------------------
+
   var htmlCards = coins.map(function(coin) {
  
-    // Is this coin in favorites?
+  
     var isFav    = favorites.includes(coin.symbol);
     var favClass = isFav ? "fav-btn active" : "fav-btn";
     var favIcon  = isFav ? "★" : "☆";
  
-    // Format the price nicely
+
     var formattedPrice = formatPrice(coin.price);
  
     return `
@@ -241,10 +206,7 @@ function displayCoins(coins) {
 }
  
  
-// =============================================
-// FUNCTION: toggleFavorite
-// Adds or removes a coin from favorites array
-// =============================================
+
 function toggleFavorite(symbol) {
  
   if (favorites.includes(symbol)) {
@@ -257,16 +219,13 @@ function toggleFavorite(symbol) {
     favorites.push(symbol);
   }
  
-  applyAll(); // re-render so the star button updates
+  applyAll(); 
 }
  
  
-// =============================================
-// FUNCTION: toggleTheme
-// Switches between dark and light mode
-// =============================================
+
 function toggleTheme() {
-  isDarkMode = !isDarkMode; // flip: true → false → true
+  isDarkMode = !isDarkMode; 
  
   var btn = document.getElementById("theme-btn");
  
@@ -279,12 +238,7 @@ function toggleTheme() {
   }
 }
  
- 
-// =============================================
-// FUNCTION: formatPrice
-// Makes prices look readable
-// BTC = $45,000.23  |  SHIB = $0.00001234
-// =============================================
+
 function formatPrice(price) {
  
   if (price >= 1) {
@@ -297,7 +251,5 @@ function formatPrice(price) {
 }
  
  
-// =============================================
-// START: Fetch coins when page loads
-// =============================================
+
 fetchCoins();
